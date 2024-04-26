@@ -7,17 +7,25 @@ import (
 	"gorm.io/gorm"
 )
 
-type CourierRepository struct {
+type CourierRepository interface {
+	Get(ctx context.Context, id int) (*models.Courier, error)
+	GetAll(ctx context.Context) ([]models.Courier, error)
+	Create(ctx context.Context, courier *models.Courier) error
+	Update(ctx context.Context, courier *models.Courier) error
+	Delete(ctx context.Context, id int) error
+}
+
+type courierRepository struct {
 	db *gorm.DB
 }
 
-func NewCourierRepository(db *gorm.DB) *CourierRepository {
-	return &CourierRepository{
+func NewCourierRepository(db *gorm.DB) CourierRepository {
+	return &courierRepository{
 		db: db,
 	}
 }
 
-func (r *CourierRepository) Get(ctx context.Context, id int) (*models.Courier, error) {
+func (r *courierRepository) Get(ctx context.Context, id int) (*models.Courier, error) {
 	var courier models.Courier
 	if err := r.db.WithContext(ctx).First(&courier, id).Error; err != nil {
 		return nil, err
@@ -26,7 +34,7 @@ func (r *CourierRepository) Get(ctx context.Context, id int) (*models.Courier, e
 	return &courier, nil
 }
 
-func (r *CourierRepository) GetAll(ctx context.Context) ([]models.Courier, error) {
+func (r *courierRepository) GetAll(ctx context.Context) ([]models.Courier, error) {
 	var couriers []models.Courier
 	if err := r.db.WithContext(ctx).Find(&couriers).Error; err != nil {
 		return nil, err
@@ -35,7 +43,7 @@ func (r *CourierRepository) GetAll(ctx context.Context) ([]models.Courier, error
 	return couriers, nil
 }
 
-func (r *CourierRepository) Create(ctx context.Context, courier *models.Courier) error {
+func (r *courierRepository) Create(ctx context.Context, courier *models.Courier) error {
 	if err := r.db.WithContext(ctx).Create(courier).Error; err != nil {
 		return err
 	}
@@ -43,7 +51,7 @@ func (r *CourierRepository) Create(ctx context.Context, courier *models.Courier)
 	return nil
 }
 
-func (r *CourierRepository) Update(ctx context.Context, courier *models.Courier) error {
+func (r *courierRepository) Update(ctx context.Context, courier *models.Courier) error {
 	if err := r.db.WithContext(ctx).Save(courier).Error; err != nil {
 		return err
 	}
@@ -51,7 +59,7 @@ func (r *CourierRepository) Update(ctx context.Context, courier *models.Courier)
 	return nil
 }
 
-func (r *CourierRepository) Delete(ctx context.Context, id int) error {
+func (r *courierRepository) Delete(ctx context.Context, id int) error {
 	if err := r.db.WithContext(ctx).Delete(&models.Courier{}, id).Error; err != nil {
 		return err
 	}

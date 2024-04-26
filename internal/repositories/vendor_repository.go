@@ -7,17 +7,25 @@ import (
 	"gorm.io/gorm"
 )
 
-type VendorRepository struct {
+type VendorRepository interface {
+	Get(ctx context.Context, id int) (*models.Vendor, error)
+	GetAll(ctx context.Context) ([]models.Vendor, error)
+	Create(ctx context.Context, vendor *models.Vendor) error
+	Update(ctx context.Context, vendor *models.Vendor) error
+	Delete(ctx context.Context, id int) error
+}
+
+type vendorRepository struct {
 	db *gorm.DB
 }
 
-func NewVendorRepository(db *gorm.DB) *VendorRepository {
-	return &VendorRepository{
+func NewVendorRepository(db *gorm.DB) VendorRepository {
+	return &vendorRepository{
 		db: db,
 	}
 }
 
-func (r *VendorRepository) Get(ctx context.Context, id int) (*models.Vendor, error) {
+func (r *vendorRepository) Get(ctx context.Context, id int) (*models.Vendor, error) {
 	var vendor models.Vendor
 	if err := r.db.WithContext(ctx).First(&vendor, id).Error; err != nil {
 		return nil, err
@@ -26,7 +34,7 @@ func (r *VendorRepository) Get(ctx context.Context, id int) (*models.Vendor, err
 	return &vendor, nil
 }
 
-func (r *VendorRepository) GetAll(ctx context.Context) ([]models.Vendor, error) {
+func (r *vendorRepository) GetAll(ctx context.Context) ([]models.Vendor, error) {
 	var vendors []models.Vendor
 	if err := r.db.WithContext(ctx).Find(&vendors).Error; err != nil {
 		return nil, err
@@ -35,7 +43,7 @@ func (r *VendorRepository) GetAll(ctx context.Context) ([]models.Vendor, error) 
 	return vendors, nil
 }
 
-func (r *VendorRepository) Create(ctx context.Context, vendor *models.Vendor) error {
+func (r *vendorRepository) Create(ctx context.Context, vendor *models.Vendor) error {
 	if err := r.db.WithContext(ctx).Create(vendor).Error; err != nil {
 		return err
 	}
@@ -43,7 +51,7 @@ func (r *VendorRepository) Create(ctx context.Context, vendor *models.Vendor) er
 	return nil
 }
 
-func (r *VendorRepository) Update(ctx context.Context, vendor *models.Vendor) error {
+func (r *vendorRepository) Update(ctx context.Context, vendor *models.Vendor) error {
 	if err := r.db.WithContext(ctx).Save(vendor).Error; err != nil {
 		return err
 	}
@@ -51,7 +59,7 @@ func (r *VendorRepository) Update(ctx context.Context, vendor *models.Vendor) er
 	return nil
 }
 
-func (r *VendorRepository) Delete(ctx context.Context, id int) error {
+func (r *vendorRepository) Delete(ctx context.Context, id int) error {
 	if err := r.db.WithContext(ctx).Delete(&models.Vendor{}, id).Error; err != nil {
 		return err
 	}

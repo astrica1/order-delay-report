@@ -7,17 +7,26 @@ import (
 	"gorm.io/gorm"
 )
 
-type OrderRepository struct {
+type OrderRepository interface {
+	Get(ctx context.Context, id int) (*models.Order, error)
+	GetAll(ctx context.Context) ([]models.Order, error)
+	Create(ctx context.Context, order *models.Order) error
+	Update(ctx context.Context, order *models.Order) error
+	Delete(ctx context.Context, id int) error
+	GetTripStatusByOrderID(ctx context.Context, orderID int) (models.TripStatus, error)
+}
+
+type orderRepository struct {
 	db *gorm.DB
 }
 
-func NewOrderRepository(db *gorm.DB) *OrderRepository {
-	return &OrderRepository{
+func NewOrderRepository(db *gorm.DB) OrderRepository {
+	return &orderRepository{
 		db: db,
 	}
 }
 
-func (r *OrderRepository) Get(ctx context.Context, id int) (*models.Order, error) {
+func (r *orderRepository) Get(ctx context.Context, id int) (*models.Order, error) {
 	var order models.Order
 	if err := r.db.WithContext(ctx).First(&order, id).Error; err != nil {
 		return nil, err
@@ -26,7 +35,7 @@ func (r *OrderRepository) Get(ctx context.Context, id int) (*models.Order, error
 	return &order, nil
 }
 
-func (r *OrderRepository) GetAll(ctx context.Context) ([]models.Order, error) {
+func (r *orderRepository) GetAll(ctx context.Context) ([]models.Order, error) {
 	var orders []models.Order
 	if err := r.db.WithContext(ctx).Find(&orders).Error; err != nil {
 		return nil, err
@@ -35,7 +44,7 @@ func (r *OrderRepository) GetAll(ctx context.Context) ([]models.Order, error) {
 	return orders, nil
 }
 
-func (r *OrderRepository) Create(ctx context.Context, order *models.Order) error {
+func (r *orderRepository) Create(ctx context.Context, order *models.Order) error {
 	if err := r.db.WithContext(ctx).Create(order).Error; err != nil {
 		return err
 	}
@@ -43,7 +52,7 @@ func (r *OrderRepository) Create(ctx context.Context, order *models.Order) error
 	return nil
 }
 
-func (r *OrderRepository) Update(ctx context.Context, order *models.Order) error {
+func (r *orderRepository) Update(ctx context.Context, order *models.Order) error {
 	if err := r.db.WithContext(ctx).Save(order).Error; err != nil {
 		return err
 	}
@@ -51,7 +60,7 @@ func (r *OrderRepository) Update(ctx context.Context, order *models.Order) error
 	return nil
 }
 
-func (r *OrderRepository) Delete(ctx context.Context, id int) error {
+func (r *orderRepository) Delete(ctx context.Context, id int) error {
 	if err := r.db.WithContext(ctx).Delete(&models.Order{}, id).Error; err != nil {
 		return err
 	}
@@ -59,7 +68,7 @@ func (r *OrderRepository) Delete(ctx context.Context, id int) error {
 	return nil
 }
 
-func (r *OrderRepository) GetTripStatusByOrderID(ctx context.Context, orderID int) (models.TripStatus, error) {
+func (r *orderRepository) GetTripStatusByOrderID(ctx context.Context, orderID int) (models.TripStatus, error) {
 	var tripStatus models.TripStatus
 	if err := r.db.WithContext(ctx).
 		Joins("JOIN trips ON orders.trip_id = trips.id").
