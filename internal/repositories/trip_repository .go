@@ -66,3 +66,16 @@ func (r *tripRepository) Delete(ctx context.Context, id int) error {
 
 	return nil
 }
+
+func (r *tripRepository) GetTripByOrderID(ctx context.Context, orderID int) (*models.Trip, error) {
+	var trip models.Trip
+	if err := r.db.WithContext(ctx).
+		Where("order_id = ?", orderID).
+		Preload("Courier").
+		Preload("Order").
+		Last(&trip).Error; err != nil {
+		return nil, err
+	}
+
+	return &trip, nil
+}
