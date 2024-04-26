@@ -19,7 +19,7 @@ func NewCustomerRepository(db *gorm.DB) *CustomerRepository {
 
 func (r *CustomerRepository) Get(ctx context.Context, id int) (*models.Customer, error) {
 	var customer models.Customer
-	if err := r.db.First(&customer, id).Error; err != nil {
+	if err := r.db.WithContext(ctx).First(&customer, id).Error; err != nil {
 		return nil, err
 	}
 
@@ -28,7 +28,7 @@ func (r *CustomerRepository) Get(ctx context.Context, id int) (*models.Customer,
 
 func (r *CustomerRepository) GetAll(ctx context.Context) ([]models.Customer, error) {
 	var customers []models.Customer
-	if err := r.db.Find(&customers).Error; err != nil {
+	if err := r.db.WithContext(ctx).Find(&customers).Error; err != nil {
 		return nil, err
 	}
 
@@ -36,7 +36,7 @@ func (r *CustomerRepository) GetAll(ctx context.Context) ([]models.Customer, err
 }
 
 func (r *CustomerRepository) Create(ctx context.Context, customer *models.Customer) error {
-	if err := r.db.Create(customer).Error; err != nil {
+	if err := r.db.WithContext(ctx).Create(customer).Error; err != nil {
 		return err
 	}
 
@@ -44,7 +44,7 @@ func (r *CustomerRepository) Create(ctx context.Context, customer *models.Custom
 }
 
 func (r *CustomerRepository) Update(ctx context.Context, customer *models.Customer) error {
-	if err := r.db.Save(customer).Error; err != nil {
+	if err := r.db.WithContext(ctx).Save(customer).Error; err != nil {
 		return err
 	}
 
@@ -52,7 +52,7 @@ func (r *CustomerRepository) Update(ctx context.Context, customer *models.Custom
 }
 
 func (r *CustomerRepository) Delete(ctx context.Context, id int) error {
-	if err := r.db.Delete(&models.Customer{}, id).Error; err != nil {
+	if err := r.db.WithContext(ctx).Delete(&models.Customer{}, id).Error; err != nil {
 		return err
 	}
 

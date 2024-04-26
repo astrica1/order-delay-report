@@ -19,7 +19,7 @@ func NewTripRepository(db *gorm.DB) *TripRepository {
 
 func (r *TripRepository) Get(ctx context.Context, id int) (*models.Trip, error) {
 	var trip models.Trip
-	if err := r.db.First(&trip, id).Error; err != nil {
+	if err := r.db.WithContext(ctx).First(&trip, id).Error; err != nil {
 		return nil, err
 	}
 
@@ -28,7 +28,7 @@ func (r *TripRepository) Get(ctx context.Context, id int) (*models.Trip, error) 
 
 func (r *TripRepository) GetAll(ctx context.Context) ([]models.Trip, error) {
 	var trips []models.Trip
-	if err := r.db.Find(&trips).Error; err != nil {
+	if err := r.db.WithContext(ctx).Find(&trips).Error; err != nil {
 		return nil, err
 	}
 
@@ -36,7 +36,7 @@ func (r *TripRepository) GetAll(ctx context.Context) ([]models.Trip, error) {
 }
 
 func (r *TripRepository) Create(ctx context.Context, trip *models.Trip) error {
-	if err := r.db.Create(trip).Error; err != nil {
+	if err := r.db.WithContext(ctx).Create(trip).Error; err != nil {
 		return err
 	}
 
@@ -44,7 +44,7 @@ func (r *TripRepository) Create(ctx context.Context, trip *models.Trip) error {
 }
 
 func (r *TripRepository) Update(ctx context.Context, trip *models.Trip) error {
-	if err := r.db.Save(trip).Error; err != nil {
+	if err := r.db.WithContext(ctx).Save(trip).Error; err != nil {
 		return err
 	}
 
@@ -52,7 +52,7 @@ func (r *TripRepository) Update(ctx context.Context, trip *models.Trip) error {
 }
 
 func (r *TripRepository) Delete(ctx context.Context, id int) error {
-	if err := r.db.Delete(&models.Trip{}, id).Error; err != nil {
+	if err := r.db.WithContext(ctx).Delete(&models.Trip{}, id).Error; err != nil {
 		return err
 	}
 

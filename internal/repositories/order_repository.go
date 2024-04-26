@@ -19,7 +19,7 @@ func NewOrderRepository(db *gorm.DB) *OrderRepository {
 
 func (r *OrderRepository) Get(ctx context.Context, id int) (*models.Order, error) {
 	var order models.Order
-	if err := r.db.First(&order, id).Error; err != nil {
+	if err := r.db.WithContext(ctx).First(&order, id).Error; err != nil {
 		return nil, err
 	}
 
@@ -28,7 +28,7 @@ func (r *OrderRepository) Get(ctx context.Context, id int) (*models.Order, error
 
 func (r *OrderRepository) GetAll(ctx context.Context) ([]models.Order, error) {
 	var orders []models.Order
-	if err := r.db.Find(&orders).Error; err != nil {
+	if err := r.db.WithContext(ctx).Find(&orders).Error; err != nil {
 		return nil, err
 	}
 
@@ -36,7 +36,7 @@ func (r *OrderRepository) GetAll(ctx context.Context) ([]models.Order, error) {
 }
 
 func (r *OrderRepository) Create(ctx context.Context, order *models.Order) error {
-	if err := r.db.Create(order).Error; err != nil {
+	if err := r.db.WithContext(ctx).Create(order).Error; err != nil {
 		return err
 	}
 
@@ -44,7 +44,7 @@ func (r *OrderRepository) Create(ctx context.Context, order *models.Order) error
 }
 
 func (r *OrderRepository) Update(ctx context.Context, order *models.Order) error {
-	if err := r.db.Save(order).Error; err != nil {
+	if err := r.db.WithContext(ctx).Save(order).Error; err != nil {
 		return err
 	}
 
@@ -52,7 +52,7 @@ func (r *OrderRepository) Update(ctx context.Context, order *models.Order) error
 }
 
 func (r *OrderRepository) Delete(ctx context.Context, id int) error {
-	if err := r.db.Delete(&models.Order{}, id).Error; err != nil {
+	if err := r.db.WithContext(ctx).Delete(&models.Order{}, id).Error; err != nil {
 		return err
 	}
 
@@ -61,7 +61,7 @@ func (r *OrderRepository) Delete(ctx context.Context, id int) error {
 
 func (r *OrderRepository) GetTripStatusByOrderID(ctx context.Context, orderID int) (models.TripStatus, error) {
 	var tripStatus models.TripStatus
-	if err := r.db.
+	if err := r.db.WithContext(ctx).
 		Joins("JOIN trips ON orders.trip_id = trips.id").
 		Where("orders.id = ?", orderID).
 		Select("trips.status").

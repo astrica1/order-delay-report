@@ -19,7 +19,7 @@ func NewVendorRepository(db *gorm.DB) *VendorRepository {
 
 func (r *VendorRepository) Get(ctx context.Context, id int) (*models.Vendor, error) {
 	var vendor models.Vendor
-	if err := r.db.First(&vendor, id).Error; err != nil {
+	if err := r.db.WithContext(ctx).First(&vendor, id).Error; err != nil {
 		return nil, err
 	}
 
@@ -28,7 +28,7 @@ func (r *VendorRepository) Get(ctx context.Context, id int) (*models.Vendor, err
 
 func (r *VendorRepository) GetAll(ctx context.Context) ([]models.Vendor, error) {
 	var vendors []models.Vendor
-	if err := r.db.Find(&vendors).Error; err != nil {
+	if err := r.db.WithContext(ctx).Find(&vendors).Error; err != nil {
 		return nil, err
 	}
 
@@ -36,7 +36,7 @@ func (r *VendorRepository) GetAll(ctx context.Context) ([]models.Vendor, error) 
 }
 
 func (r *VendorRepository) Create(ctx context.Context, vendor *models.Vendor) error {
-	if err := r.db.Create(vendor).Error; err != nil {
+	if err := r.db.WithContext(ctx).Create(vendor).Error; err != nil {
 		return err
 	}
 
@@ -44,7 +44,7 @@ func (r *VendorRepository) Create(ctx context.Context, vendor *models.Vendor) er
 }
 
 func (r *VendorRepository) Update(ctx context.Context, vendor *models.Vendor) error {
-	if err := r.db.Save(vendor).Error; err != nil {
+	if err := r.db.WithContext(ctx).Save(vendor).Error; err != nil {
 		return err
 	}
 
@@ -52,7 +52,7 @@ func (r *VendorRepository) Update(ctx context.Context, vendor *models.Vendor) er
 }
 
 func (r *VendorRepository) Delete(ctx context.Context, id int) error {
-	if err := r.db.Delete(&models.Vendor{}, id).Error; err != nil {
+	if err := r.db.WithContext(ctx).Delete(&models.Vendor{}, id).Error; err != nil {
 		return err
 	}
 
