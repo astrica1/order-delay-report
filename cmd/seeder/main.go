@@ -60,14 +60,14 @@ func init() {
 
 func addAgents(db *gorm.DB) error {
 	r := repositories.NewAgentRepository(db)
-	for i := 0; i < 20; i++ {
+	for i := 0; i < 5; i++ {
 		m := &models.Agent{
 			Username: fake.UserName(),
 			Password: fake.Password(32, 32, true, true, false),
 			IsActive: true,
 		}
 
-		if err := r.Create(context.TODO(), m); err != nil {
+		if err := r.Create(context.Background(), m); err != nil {
 			return err
 		}
 	}
@@ -83,7 +83,7 @@ func addCourier(db *gorm.DB) error {
 			PhoneNumber: fakePhoneNumber(),
 		}
 
-		if err := r.Create(context.TODO(), m); err != nil {
+		if err := r.Create(context.Background(), m); err != nil {
 			return err
 		}
 	}
@@ -99,7 +99,7 @@ func addCustomer(db *gorm.DB) error {
 			PhoneNumber: fakePhoneNumber(),
 		}
 
-		if err := r.Create(context.TODO(), m); err != nil {
+		if err := r.Create(context.Background(), m); err != nil {
 			return err
 		}
 	}
@@ -116,7 +116,7 @@ func addVendor(db *gorm.DB) error {
 			PhoneNumber: fakePhoneNumber(),
 		}
 
-		if err := r.Create(context.TODO(), m); err != nil {
+		if err := r.Create(context.Background(), m); err != nil {
 			return err
 		}
 	}
@@ -134,7 +134,7 @@ func addOrder(db *gorm.DB) error {
 			DeliveryTime: time.Now().Add(time.Duration(rand.Intn(20)+1) * time.Minute),
 		}
 
-		if err := r.Create(context.TODO(), m); err != nil {
+		if err := r.Create(context.Background(), m); err != nil {
 			return err
 		}
 	}
@@ -153,7 +153,7 @@ func addTrip(db *gorm.DB) error {
 			Status:    models.TripStatus(rand.Intn(3)),
 		}
 
-		if err := r.Create(context.TODO(), m); err != nil {
+		if err := r.Create(context.Background(), m); err != nil {
 			return err
 		}
 	}
@@ -168,12 +168,12 @@ func addDelayReport(db *gorm.DB) error {
 	for i := 0; i < 5; i++ {
 		m := &models.DelayReport{
 			OrderID:    rand.Intn(10) + 1,
-			AgentID:    rand.Intn(10) + 1,
+			AgentID:    rand.Intn(4) + 1,
 			ReportTime: time.Now(),
 			Status:     models.ReportStatus(rand.Intn(2)),
 		}
 
-		if err := r.Create(context.TODO(), m); err != nil {
+		if err := r.Create(context.Background(), m); err != nil {
 			return err
 		}
 	}
