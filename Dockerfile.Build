@@ -1,0 +1,18 @@
+FROM golang:1.22 AS builder
+
+WORKDIR /tmp/app
+
+COPY ./go.mod ./go.sum ./
+RUN go mod download
+
+COPY ./cmd ./internal ./configs ./pkg ./migrations ./
+
+RUN CGO_ENABLED=0 GOOS=linux go build -o dist/migration ./cmd/migration/main.go
+RUN CGO_ENABLED=0 GOOS=linux go build -o dist/server ./cmd/server/main.go
+
+FROM alpine:3.18.6 AS runner
+COPY --from=builder /tmp/app/dist/migration /opt/migration
+COPY --from=builder /tmp/app/dist/server /opt/server
+
+RUN /opt/migration
+CMD [ "/opt/server" ]
