@@ -97,6 +97,8 @@ func addCustomer(db *gorm.DB) error {
 		m := &models.Customer{
 			FullName:    fake.FullName(),
 			PhoneNumber: fakePhoneNumber(),
+			Username:    fake.UserName(),
+			Password:    fake.Password(32, 32, true, true, false),
 		}
 
 		if err := r.Create(context.Background(), m); err != nil {
@@ -150,7 +152,7 @@ func addTrip(db *gorm.DB) error {
 		m := &models.Trip{
 			CourierID: rand.Intn(15) + 1,
 			OrderID:   rand.Intn(10) + 1,
-			Status:    models.TripStatus(rand.Intn(3)),
+			Status:    models.TripStatus(rand.Intn(3) + 1),
 		}
 
 		if err := r.Create(context.Background(), m); err != nil {
@@ -170,7 +172,7 @@ func addDelayReport(db *gorm.DB) error {
 			OrderID:    rand.Intn(10) + 1,
 			AgentID:    rand.Intn(4) + 1,
 			ReportTime: time.Now(),
-			Status:     models.ReportStatus(rand.Intn(2)),
+			Status:     models.ReportStatus(rand.Intn(2) + 1),
 		}
 
 		if err := r.Create(context.Background(), m); err != nil {
